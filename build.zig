@@ -3,6 +3,7 @@ const std = @import("std");
 pub fn build(b: *std.Build) void {
     var target = b.standardTargetOptions(.{});
     target.os_tag = .freestanding;
+    target.cpu_arch = .x86;
 
     const optimize = b.standardOptimizeOption(.{});
 
@@ -12,6 +13,7 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
+
     kernel.addAssemblyFile(std.Build.LazyPath{ .path = "src/boot.s" });
     kernel.setLinkerScript(.{ .path = "./src/linker.ld" });
 
