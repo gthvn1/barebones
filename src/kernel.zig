@@ -1,1 +1,3 @@
-export fn kernel_main() callconv(.Naked) noreturn {}
+export fn kernel_main() callconv(.Naked) noreturn {
+    while (true) {}
+}

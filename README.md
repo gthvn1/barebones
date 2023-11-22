@@ -15,8 +15,4 @@
 - [*] Add the build.zig
 - [*] Put zig source into src/
 - [*] Build: `zig build`
-- [ ] Run in qemu
-  - With Zig we built a 64 bits version. The multiboot 1 doesn't so
-    we need to use multiboot2
-- [ ] Write Hello world from Zig
-- [ ] Cleanup old files
+- [*] Run in qemu: `qemu-system-i386 -kernel zig-out/bin/myos.bin`
