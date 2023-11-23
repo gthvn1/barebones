@@ -25,7 +25,7 @@
 - [x] add function to set the color
 - [x] add function to clear screen
 - [x] add function to print one character
-- [ ] add function to print string
+- [x] add function to print string
 
 ## Step?: ...
 - Setup GDT (we rely on the one sets by the bootloader that is not good)

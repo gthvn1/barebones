@@ -1,5 +1,7 @@
 //! # VGA Text Mode
 //!
+//! https://en.wikipedia.org/wiki/VGA_text_mode
+//!
 //! Manage VGA Text buffer. Each screen character is represented by two
 //! bytes aligned as a 16-bit word.
 //!
@@ -12,7 +14,6 @@
 //! +---+-----------+---------------+---+---+---+---+---+---+---+---+
 //!   ^
 //!   +-- Blink (depending of mode)
-//!
 
 pub const VGAColor = enum(u4) {
     black,
@@ -70,6 +71,11 @@ pub fn VGATextMode() type {
             if (self.row == VGA_HEIGHT) {
                 self.row = 0;
             }
+        }
+
+        pub fn putString(self: *Self, str: []const u8) void {
+            for (0..str.len) |i|
+                self.putChar(str[i]);
         }
 
         pub fn clear(self: *Self) void {
