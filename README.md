@@ -5,6 +5,11 @@
   - it requires *qemu-system-i386* to run
   - currently running as 32-bits because we only have *multiboot*
 
+# Screenshots
+
+- First message
+![](https://github.com/gthvn1/barebones/blob/master/screenshots/first_msg.png)
+
 # Steps
 
 ## Step 1: bootstrap from OSDdev
