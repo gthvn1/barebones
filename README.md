@@ -1,6 +1,7 @@
 # Barebones
 
 - Based on https://wiki.osdev.org/Bare_Bones
+- Build with zig 0.12.0-dev
 - `zig build run`
   - it requires *qemu-system-i386* to run
   - currently running as 32-bits because we only have *multiboot*
