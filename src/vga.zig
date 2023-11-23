@@ -60,6 +60,27 @@ pub fn TextMode() type {
             self.color = vgaEntryColor(fg, bg);
         }
 
+        pub fn putInt(self: *Self, i: u32) void {
+            // u32 as at most 10 characters.
+            var number: u32 = i;
+            var str_number: [16]u8 = undefined;
+            var idx: usize = 0;
+
+            // str will be reversed
+            while (true) : (idx += 1) {
+                const digit: u8 = @truncate(number % 10);
+                str_number[idx] = digit + '0';
+                number = number / 10;
+                if (number == 0) break;
+            }
+
+            // print starting from end
+            while (true) : (idx -= 1) {
+                self.putChar(str_number[idx]);
+                if (idx == 0) break;
+            }
+        }
+
         pub fn putChar(self: *Self, char: u8) void {
             // Deal with special characters
             switch (char) {
