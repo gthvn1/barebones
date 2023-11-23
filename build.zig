@@ -19,8 +19,12 @@ pub fn build(b: *std.Build) void {
 
     b.installArtifact(kernel);
 
-    const run_cmd = b.addRunArtifact(kernel);
+    const run_cmd = b.addSystemCommand(&.{ "qemu-system-i386", "-kernel" });
+    run_cmd.addArtifactArg(kernel);
     run_cmd.step.dependOn(b.getInstallStep());
+
+    if (b.args) |args|
+        run_cmd.addArgs(args);
 
     const run_step = b.step("run", "Build myos.bin");
     run_step.dependOn(&run_cmd.step);

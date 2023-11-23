@@ -1,6 +1,9 @@
 # Barebones
 
 - Based on https://wiki.osdev.org/Bare_Bones
+- `zig build run`
+  - it requires *qemu-system-i386* to run
+  - currently running as 32-bits because we only have *multiboot*
 
 # Steps
 
@@ -19,3 +22,8 @@
 
 ## Step3: Print Hello from Zig
 - [ ] add functions to print string
+
+# Missing
+
+- Setup GDT (we rely on the one sets by the bootloader that is not good)
+- ...
