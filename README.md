@@ -21,9 +21,11 @@
 - [x] Run in qemu: `qemu-system-i386 -kernel zig-out/bin/myos.bin`
 
 ## Step3: Print Hello from Zig
-- [ ] add functions to print string
+- [x] create `VgaTextMode` to manage the VGA text buffer
+- [x] add function to set the color
+- [x] add function to clear screen
+- [x] add function to print one character
+- [ ] add function to print string
 
-# Missing
-
+## Step?: ...
 - Setup GDT (we rely on the one sets by the bootloader that is not good)
-- ...

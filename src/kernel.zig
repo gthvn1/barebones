@@ -1,8 +1,11 @@
-const terminal = @import("terminal.zig");
+const vga = @import("vga_text_mode.zig");
 
 export fn kernel_main() noreturn {
-    var tty1 = terminal.tty{};
-    tty1.clear();
+    var tty = vga.VGATextMode(){};
+    tty.clear();
+    tty.putChar('Z');
+    tty.putChar('I');
+    tty.putChar('G');
 
     while (true) {}
 }
