@@ -15,6 +15,7 @@ export fn kernel_main() noreturn {
     tty.clear();
     tty.putString("All your codebase are belong to us.\n\r");
     tty.putString("We're counting on you, ZIG!!\n\r");
+    tty.putInt(42);
 
     @panic("This is the end, my only friend...");
 }
