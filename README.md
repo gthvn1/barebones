@@ -8,7 +8,7 @@
 # Screenshots
 
 - First message
-![](https://github.com/gthvn1/barebones/blob/master/screenshots/first_msg.png)
+![screenshot:first_msg](https://github.com/gthvn1/barebones/blob/master/screenshots/first_msg.png)
 
 # Steps
 
