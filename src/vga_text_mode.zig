@@ -37,9 +37,9 @@ pub const VGAColor = enum(u4) {
 pub fn VGATextMode() type {
     return struct {
         const VGA_ADDR = 0xB8000;
-        const VGA_WIDHT = 80;
+        const VGA_WIDTH = 80;
         const VGA_HEIGHT = 25;
-        const VGA_SIZE = VGA_WIDHT * VGA_HEIGHT;
+        const VGA_SIZE = VGA_WIDTH * VGA_HEIGHT;
 
         row: usize = 0,
         column: usize = 0,
@@ -61,13 +61,23 @@ pub fn VGATextMode() type {
         }
 
         pub fn putChar(self: *Self, char: u8) void {
-            const idx: usize = self.row * VGA_WIDHT + self.column;
-            self.buffer[idx] = vgaEntry(char, self.color);
-            self.column += 1;
-            if (self.column == VGA_WIDHT) {
+            // Deal with special characters
+            switch (char) {
+                '\n' => self.row += 1,
+                '\r' => self.column = 0,
+                else => {
+                    const idx: usize = self.row * VGA_WIDTH + self.column;
+                    self.buffer[idx] = vgaEntry(char, self.color);
+                    self.column += 1;
+                },
+            }
+
+            // Check boudaries
+            if (self.column == VGA_WIDTH) {
                 self.column = 0;
                 self.row += 1;
             }
+
             if (self.row == VGA_HEIGHT) {
                 self.row = 0;
             }
