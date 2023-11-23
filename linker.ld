@@ -24,27 +24,27 @@ SECTIONS
 	   Next we'll put the .text section. */
 	.text : ALIGN(4K)
 	{
-		*(.multiboot)
-		*(.text)
+		KEEP(*(.multiboot))
+		*(.text.*)
 	}
  
 	/* Read-only data. */
 	.rodata : ALIGN(4K)
 	{
-		*(.rodata)
+		*(.rodata.*)
 	}
  
 	/* Read-write data (initialized) */
 	.data : ALIGN(4K)
 	{
-		*(.data)
+		*(.data.*)
 	}
  
 	/* Read-write data (uninitialized) and stack */
 	.bss : ALIGN(4K)
 	{
+		*(.bss.*)
 		*(COMMON)
-		*(.bss)
 	}
  
 	/* The compiler may produce other sections, by default it will put them in
