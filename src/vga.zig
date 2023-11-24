@@ -34,7 +34,7 @@ pub const VGAColor = enum(u4) {
     white,
 };
 
-pub fn VGATextMode() type {
+pub fn TextMode() type {
     return struct {
         const VGA_ADDR = 0xB8000;
         const VGA_WIDTH = 80;

@@ -1,7 +1,7 @@
-const vga = @import("vga_text_mode.zig");
+const vga = @import("vga.zig");
 const builtin = @import("std").builtin;
 
-var tty = vga.VGATextMode(){};
+var tty = vga.TextMode(){};
 
 pub fn panic(msg: []const u8, err: ?*builtin.StackTrace, s: ?usize) noreturn {
     _ = s;
