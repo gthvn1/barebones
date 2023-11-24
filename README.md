@@ -1,7 +1,7 @@
 # Kikuyu Colobus
 
 The kikuyu Colobus monkey has its name that starts with 'k' that remember me the 'k' of Kernel... kind of.
-It will be the operating system of Monkey Island that one day will be the meeting of two monkeys,
+It will be the operating system of Monkey Islang that one day will be the meeting of two monkeys,
 [Kikuyu](https://github.com/gthvn1/kikuyu) and [Zanzibar](https://github.com/gthvn1/zanzibar).
 
 ## Overview
