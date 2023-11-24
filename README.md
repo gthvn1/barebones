@@ -36,3 +36,20 @@
 
 ## Step?: ...
 - Setup GDT (we rely on the one sets by the bootloader that is not good)
+
+# Debug
+
+- Check the address of the `kernel_main` function
+```
+❯ nm -s zig-out/bin/myos.bin | grep main
+00200230 T kernel_main
+```
+- Start qemu with the option for debugging and stopping the CPU when started
+```
+❯ qemu-system-i386 -kernel zig-out/bin/myos.bin -s -S
+```
+- And connect remotly using gdb
+```
+❯ gdb -ex 'target remote localhost:1234'
+```
+- Now you can add a break to `kernel_main`, in my case `break *0x200230` and debug...
