@@ -34,6 +34,9 @@
 - [x] add function to print one character
 - [x] add function to print string
 
+## Step4: Panic
+- [x] if something goes wrong and panic is called we need to print the message
+
 ## Step?: ...
 - Setup GDT (we rely on the one sets by the bootloader that is not good)
 

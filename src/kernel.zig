@@ -1,9 +1,20 @@
 const vga = @import("vga_text_mode.zig");
+const builtin = @import("std").builtin;
+
+var tty = vga.VGATextMode(){};
+
+pub fn panic(msg: []const u8, err: ?*builtin.StackTrace, s: ?usize) noreturn {
+    _ = s;
+    _ = err;
+    tty.setColor(.red, .white);
+    tty.putString(msg);
+    while (true) {}
+}
 
 export fn kernel_main() noreturn {
-    var tty = vga.VGATextMode(){};
     tty.clear();
     tty.putString("All your codebase are belong to us.\n\r");
-    tty.putString("We're counting on you, ZIG!!");
-    while (true) {}
+    tty.putString("We're counting on you, ZIG!!\n\r");
+
+    @panic("This is the end, my only friend...");
 }
