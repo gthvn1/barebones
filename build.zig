@@ -1,10 +1,21 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) void {
-    var target = b.standardTargetOptions(.{});
-    target.cpu_model = .native;
-    target.cpu_arch = .x86; // 32 bits
-    target.os_tag = .freestanding; // Otherwise it will look for a main function
+    var target: std.zig.CrossTarget = .{
+        .cpu_arch = .x86, // 32 bits
+        .os_tag = .freestanding, // Otherwise it will look for a main function
+        .abi = .none,
+    };
+
+    // Disable CPU features that require additional initialization
+    // like MMX, SSE/2 and AVX.
+    const Features = std.Target.x86.Feature;
+    target.cpu_features_sub.addFeature(@intFromEnum(Features.mmx));
+    target.cpu_features_sub.addFeature(@intFromEnum(Features.sse));
+    target.cpu_features_sub.addFeature(@intFromEnum(Features.sse2));
+    target.cpu_features_sub.addFeature(@intFromEnum(Features.avx));
+    target.cpu_features_sub.addFeature(@intFromEnum(Features.avx2));
+    target.cpu_features_sub.addFeature(@intFromEnum(Features.soft_float));
 
     const optimize = b.standardOptimizeOption(.{});
 
@@ -17,6 +28,7 @@ pub fn build(b: *std.Build) void {
 
     kernel.addAssemblyFile(std.Build.LazyPath{ .path = "src/boot.s" });
     kernel.setLinkerScript(.{ .path = "linker.ld" });
+    kernel.code_model = .kernel;
 
     b.installArtifact(kernel);
 
