@@ -31,7 +31,7 @@ It will be the operating system of Monkey Islang that one day will be the meetin
 - [x] Add the build.zig
 - [x] Put zig source into src/
 - [x] Build: `zig build`
-- [x] Run in qemu: `qemu-system-i386 -kernel zig-out/bin/myos.bin`
+- [x] Run in qemu: `qemu-system-i386 -kernel zig-out/bin/kikuyu`
 
 ### Step3: Print Hello from Zig
 - [x] create `VgaTextMode` to manage the VGA text buffer
@@ -50,12 +50,12 @@ It will be the operating system of Monkey Islang that one day will be the meetin
 
 - Check the address of the `kernel_main` function
 ```
-❯ nm -s zig-out/bin/myos.bin | grep main
+❯ nm -s zig-out/bin/kikuyu | grep main
 00200230 T kernel_main
 ```
 - Start qemu with the option for debugging and stopping the CPU when started
 ```
-❯ qemu-system-i386 -kernel zig-out/bin/myos.bin -s -S
+❯ qemu-system-i386 -kernel zig-out/bin/kikuyu -s -S
 ```
 - And connect remotly using gdb
 ```

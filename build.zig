@@ -20,7 +20,7 @@ pub fn build(b: *std.Build) void {
     const optimize = b.standardOptimizeOption(.{});
 
     const kernel = b.addExecutable(.{
-        .name = "myos.bin",
+        .name = "kikuyu",
         .root_source_file = .{ .path = "src/kernel.zig" },
         .target = target,
         .optimize = optimize,
@@ -39,6 +39,6 @@ pub fn build(b: *std.Build) void {
     if (b.args) |args|
         run_cmd.addArgs(args);
 
-    const run_step = b.step("run", "Build myos.bin");
+    const run_step = b.step("run", "Build kikuyu");
     run_step.dependOn(&run_cmd.step);
 }
