@@ -48,10 +48,10 @@ It will be the operating system of Monkey Islang that one day will be the meetin
 
 ## Debug
 
-- Check the address of the `kernel_main` function
+- Check the address of the `kernelMain` function
 ```
 ❯ nm -s zig-out/bin/kikuyu | grep main
-00200230 T kernel_main
+00200230 T kernelMain
 ```
 - Start qemu with the option for debugging and stopping the CPU when started
 ```
@@ -61,4 +61,4 @@ It will be the operating system of Monkey Islang that one day will be the meetin
 ```
 ❯ gdb -ex 'target remote localhost:1234'
 ```
-- Now you can add a break to `kernel_main`, in my case `break *0x200230` and debug...
+- Now you can add a break to `kernelMain`, in my case `break *0x200230` and debug...

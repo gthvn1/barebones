@@ -11,11 +11,12 @@ pub fn panic(msg: []const u8, err: ?*builtin.StackTrace, s: ?usize) noreturn {
     while (true) {}
 }
 
-export fn kernel_main() noreturn {
+export fn kernelMain() noreturn {
     tty.clear();
     tty.putString("All your codebase are belong to us.\n\r");
     tty.putString("We're counting on you, ZIG!!\n\r");
     tty.putInt(42);
 
-    @panic("This is the end, my only friend...");
+    while (true)
+        asm volatile ("hlt");
 }
