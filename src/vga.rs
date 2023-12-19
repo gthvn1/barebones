@@ -1,3 +1,8 @@
+// VGA Text Mode Driver
+//
+// Reference: https://en.wikipedia.org/wiki/VGA_text_mode
+// Reference: https://os.phil-opp.com/vga-text-mode/
+//
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
@@ -39,48 +44,53 @@ struct Buffer {
     chars: [[Char; BUFFER_WIDTH]; BUFFER_HEIGHT],
 }
 
-struct Writer {
+struct TextMode {
+    row_position: usize,
     column_position: usize,
     color_code: u8,
-    buffer: &'static mut Buffer,
+    buffer: &'static mut Buffer, // Constants must be explicitly typed. The
+                                 // type must have a 'static lifetime
 }
 
-impl Writer {
+impl TextMode {
     fn write_byte(&mut self, byte: u8) {
         match byte {
-            b'\n' => self.new_line(),
-            byte => {
-                if self.column_position >= BUFFER_WIDTH {
-                    self.new_line();
-                }
-
-                let row = BUFFER_HEIGHT - 1;
-                let col = self.column_position;
-
-                self.buffer.chars[row][col] = Char {
+            b'\n' => self.row_position += 1,
+            b'\r' => self.column_position = 0,
+            _ => {
+                self.buffer.chars[self.row_position][self.column_position] = Char {
                     ascii_char: byte,
                     color_code: self.color_code,
                 };
+
                 self.column_position += 1;
             }
         }
-    }
 
-    fn new_line(&mut self) {
-        // TODO
+        // Check boundaries after upgrading position.
+        if self.column_position >= BUFFER_WIDTH {
+            self.column_position = 0;
+            self.row_position += 1;
+        }
+
+        // TODO: handle scrolling.
+        if self.row_position >= BUFFER_HEIGHT {
+            self.row_position = 0;
+        }
     }
 }
 
-const HELLO: &[u8] = b"Welcome to Monkey Islang!";
+const BANNER: &[u8] = b"Enter the Enchanted Shores of Simian Atoll!";
 
 pub fn banner() {
-    let mut writer = Writer {
+    let mut writer = TextMode {
+        row_position: 0,
         column_position: 0,
         color_code: get_color_code(Color::Yellow, Color::Black),
         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
     };
 
-    for (i, &byte) in HELLO.iter().enumerate() {
+    for &byte in BANNER.iter() {
         writer.write_byte(byte);
     }
 }
