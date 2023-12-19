@@ -16,7 +16,7 @@ It will be the operating system of Monkey Islang that one day will be the meetin
 
 - The first message...
 
-![screenshot:first_msg](https://github.com/gthvn1/barebones/blob/master/screenshots/first_msg.png)
+![screenshot:first_msg](https://github.com/gthvn1/kikuyu/blob/master/zig_try/screenshots/first_msg.png)
 
 ## Steps
 
