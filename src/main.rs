@@ -10,9 +10,7 @@
 
 mod vga;
 
-use core::panic::PanicInfo;
-
-use core::arch::global_asm;
+use core::{arch::global_asm, panic::PanicInfo};
 
 global_asm!(include_str!("boot.s"), options(att_syntax));
 
@@ -39,5 +37,6 @@ fn panic(_info: &PanicInfo) -> ! {
 #[no_mangle]
 pub extern "C" fn kernel_start() -> ! {
     vga::hello();
-    loop {}
+
+    panic!("done");
 }
