@@ -36,7 +36,7 @@ fn panic(_info: &PanicInfo) -> ! {
 // The '!' type means that this function never returns.
 #[no_mangle]
 pub extern "C" fn kernel_start() -> ! {
-    vga::hello();
+    vga::banner();
 
     panic!("done");
 }
