@@ -8,6 +8,7 @@
 // and we will also need to tell to the compiler to not modify the name of our
 // new entry point function using the 'mangle' attribute.
 
+mod serial;
 mod vga;
 
 use core::{arch::global_asm, panic::PanicInfo};
@@ -45,5 +46,17 @@ pub extern "C" fn kernel_start() -> ! {
     console.write_string(BANNER);
     console.write_string("How are you?\n\r");
 
-    panic!("done");
+    let com = serial::Serial::new();
+    if com.init() {
+        console.write_string("Serial port initialized\n\r");
+        com.write_serial(b'H');
+        com.write_serial(b'e');
+        com.write_serial(b'l');
+        com.write_serial(b'l');
+        com.write_serial(b'o');
+    } else {
+        panic!("Serial port not initialized");
+    };
+
+    loop {}
 }
