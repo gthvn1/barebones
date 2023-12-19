@@ -8,6 +8,8 @@
 // and we will also need to tell to the compiler to not modify the name of our
 // new entry point function using the 'mangle' attribute.
 
+mod vga;
+
 use core::panic::PanicInfo;
 
 use core::arch::global_asm;
@@ -36,5 +38,6 @@ fn panic(_info: &PanicInfo) -> ! {
 // The '!' type means that this function never returns.
 #[no_mangle]
 pub extern "C" fn kernel_start() -> ! {
+    vga::hello();
     loop {}
 }

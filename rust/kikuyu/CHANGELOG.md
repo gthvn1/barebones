@@ -2,6 +2,9 @@
 
 ## 2023-12-29
 
+### Add vga module
+- print a welcome message on VGA screen
+
 ### Modify the build to target 32 bits kernel
 - We build 32 bits because qemu cannot load 64 bit ELF files by default. So
 switch to 32 bits is the easiest way for booting our kernel.
