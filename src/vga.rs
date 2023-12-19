@@ -44,7 +44,7 @@ struct Buffer {
     chars: [[Char; BUFFER_WIDTH]; BUFFER_HEIGHT],
 }
 
-struct TextMode {
+pub struct TextMode {
     row_position: usize,
     column_position: usize,
     color_code: u8,
@@ -53,6 +53,26 @@ struct TextMode {
 }
 
 impl TextMode {
+    pub fn new() -> Self {
+        TextMode {
+            row_position: 0,
+            column_position: 0,
+            color_code: get_color_code(Color::Green, Color::Black),
+            buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
+        }
+    }
+
+    pub fn write_string(&mut self, s: &str) {
+        for byte in s.bytes() {
+            match byte {
+                // Printable ASCII byte or newline
+                0x20..=0x7e | b'\n' | b'\r' => self.write_byte(byte),
+                // Not part of printable ASCII range
+                _ => self.write_byte(0xfe),
+            }
+        }
+    }
+
     fn write_byte(&mut self, byte: u8) {
         match byte {
             b'\n' => self.row_position += 1,
@@ -78,19 +98,18 @@ impl TextMode {
             self.row_position = 0;
         }
     }
-}
 
-const BANNER: &[u8] = b"Enter the Enchanted Shores of Simian Atoll!";
+    pub fn clear(&mut self) {
+        for row in 0..BUFFER_HEIGHT {
+            for col in 0..BUFFER_WIDTH {
+                self.buffer.chars[row][col] = Char {
+                    ascii_char: b' ',
+                    color_code: self.color_code,
+                };
+            }
+        }
 
-pub fn banner() {
-    let mut writer = TextMode {
-        row_position: 0,
-        column_position: 0,
-        color_code: get_color_code(Color::Yellow, Color::Black),
-        buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
-    };
-
-    for &byte in BANNER.iter() {
-        writer.write_byte(byte);
+        self.row_position = 0;
+        self.column_position = 0;
     }
 }
