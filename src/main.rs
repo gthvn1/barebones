@@ -11,6 +11,7 @@
 mod vga;
 
 use core::{arch::global_asm, panic::PanicInfo};
+use vga::TextMode;
 
 global_asm!(include_str!("boot.s"), options(att_syntax));
 
@@ -24,6 +25,8 @@ fn panic(_info: &PanicInfo) -> ! {
     loop {}
 }
 
+const BANNER: &str = "Welcome to Monkey Islang !\n\r";
+
 // Providing our panic handler generates an error about 'eh_personality'.
 // The eh stands for exception handling. 'eh_personality' marks
 // a function that is used for implementing stack unwinding. It is a complex
@@ -36,7 +39,11 @@ fn panic(_info: &PanicInfo) -> ! {
 // The '!' type means that this function never returns.
 #[no_mangle]
 pub extern "C" fn kernel_start() -> ! {
-    vga::banner();
+    let mut console = TextMode::new();
+
+    console.clear();
+    console.write_string(BANNER);
+    console.write_string("How are you?\n\r");
 
     panic!("done");
 }
