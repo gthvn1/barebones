@@ -5,7 +5,7 @@
 .set MAGIC,    0x1BADB002       /* 'magic number' lets bootloader find the header */
 .set CHECKSUM, -(MAGIC + FLAGS) /* checksum of above, to prove we are multiboot */
 
-/* 
+/*
 Declare a multiboot header that marks the program as a kernel. These are magic
 values that are documented in the multiboot standard. The bootloader will
 search for this signature in the first 8 KiB of the kernel file, aligned at a
@@ -84,7 +84,7 @@ _start:
 	stack since (pushed 0 bytes so far), so the alignment has thus been
 	preserved and the call is well defined.
 	*/
-	call kernelMain
+	call kernel_start
 
 	/*
 	If the system has nothing more to do, put the computer into an
@@ -92,7 +92,7 @@ _start:
 	1) Disable interrupts with cli (clear interrupt enable in eflags).
 	   They are already disabled by the bootloader, so this is not needed.
 	   Mind that you might later enable interrupts and return from
-	   kernelMain (which is sort of nonsensical to do).
+	   kernel_start (which is sort of nonsensical to do).
 	2) Wait for the next interrupt to arrive with hlt (halt instruction).
 	   Since they are disabled, this will lock up the computer.
 	3) Jump to the hlt instruction if it ever wakes up due to a
