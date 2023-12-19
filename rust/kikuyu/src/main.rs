@@ -10,6 +10,10 @@
 
 use core::panic::PanicInfo;
 
+use core::arch::global_asm;
+
+global_asm!(include_str!("boot.s"), options(att_syntax));
+
 // The panic_handler attribute is used to define a custom panic handler. As
 // we don't have standard library we don't have the one provided by it that is
 // the normal default handler. So we need to define our own
@@ -31,6 +35,6 @@ fn panic(_info: &PanicInfo) -> ! {
 // _start is the name of the entry point for most systems.
 // The '!' type means that this function never returns.
 #[no_mangle]
-pub extern "C" fn _start() -> ! {
+pub extern "C" fn kernel_start() -> ! {
     loop {}
 }
