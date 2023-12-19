@@ -6,6 +6,14 @@
 
 # Notes
 
+## Memory
+- Some functions related to memory are not provided by default when building `compiler_builtins` because
+they are provided by the standard library and we avoid name collision. This is the case for `memset`,
+`memcpy` or `memcmp`. However we are now building our binary without the standard library so we can
+implement these functions (and maybe introduce bug) or enable their compilation. We choose the second
+option.
+
+## Build
 - As we are building our own target we must also build the "core" and "compiler_builtins" crates. We don't have standard library but we need core and builtins.
   - This is done by adding `.cargo/config.toml` file
   - We also need to have rust source code:
