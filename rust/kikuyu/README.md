@@ -5,6 +5,7 @@ It will be the kernel of [Monkey Islang](https://github.com/gthvn1/monkey_islang
 
 # Links
 
+- [The Rust Standard Library](https://doc.rust-lang.org/std/index.html)
 - [Writing an OS in Rust](https://os.phil-opp.com/)
 - [Bare Bones - booting simple kernel](https://wiki.osdev.org/Bare_Bones)
 - [Writing an OS - Sphaerophoria YT](https://www.youtube.com/watch?v=gBykJMqDqH0&list=PL980gcR1LE3LBuWuSv2CL28HsfnpC4Qf7)
