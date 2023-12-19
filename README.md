@@ -8,9 +8,7 @@ It will be the kernel of [Monkey Islang](https://github.com/gthvn1/monkey_islang
 - We installed [i686 cross compiler](https://wiki.osdev.org/Bare_Bones#Building_a_Cross-Compiler).
 - We are using nightly build from rust.
 - Setup the cross compiled environment: `./env.sh`
-- Run the kernel in qemu-system-i386: `cargo run --release`
-  - We use release because with debug we have many debug symbols. Not sure of the
-  impact...
+- Run the kernel in qemu-system-i386: `cargo run`
 - Check code using: `cargo +nightly clippy -- -Dwarnings`
 
 # Links
