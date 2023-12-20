@@ -5,7 +5,7 @@
 - Improve vga driver
 - Update linker to use rust-llvm
 
-## 2023-12-29
+## 2023-12-19
 
 - Add vga module
     - print a welcome message on VGA screen
