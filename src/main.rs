@@ -38,6 +38,7 @@ const BANNER: &str = "Welcome to Monkey Islang !\n\r";
 // "C" to tell the compiler to use the C calling convention for this function.
 // _start is the name of the entry point for most systems.
 // The '!' type means that this function never returns.
+#[allow(clippy::empty_loop)]
 #[no_mangle]
 pub extern "C" fn kernel_start() -> ! {
     let mut console = TextMode::new();

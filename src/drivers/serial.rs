@@ -5,6 +5,7 @@ pub struct Serial {
     port: u16,
 }
 
+#[allow(clippy::identity_op)]
 #[allow(dead_code)]
 impl Serial {
     pub fn new() -> Serial {
