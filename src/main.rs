@@ -8,11 +8,11 @@
 // and we will also need to tell to the compiler to not modify the name of our
 // new entry point function using the 'mangle' attribute.
 
-mod serial;
-mod vga;
+mod drivers;
 
 use core::{arch::global_asm, panic::PanicInfo};
-use vga::TextMode;
+use drivers::serial;
+use drivers::vga::TextMode;
 
 global_asm!(include_str!("boot.s"), options(att_syntax));
 
