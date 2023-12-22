@@ -87,6 +87,11 @@ _start:
     stack since (pushed 0 bytes so far), so the alignment has thus been
     preserved and the call is well defined.
   */
+
+  /* Args are pushed on the stack in reverse order */
+  push $0x5678
+  push $0x1234
+
   call kernel_start
 
   /*

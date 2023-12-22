@@ -40,7 +40,7 @@ const BANNER: &str = "Welcome to Monkey Islang !\n\r";
 // The '!' type means that this function never returns.
 #[allow(clippy::empty_loop)]
 #[no_mangle]
-pub extern "C" fn kernel_start() -> ! {
+pub extern "C" fn kernel_start(eax: u32, ebx: u32) -> ! {
     let mut console = TextMode::new();
 
     console.clear();
