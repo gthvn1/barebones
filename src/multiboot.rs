@@ -32,12 +32,12 @@ pub struct MemoryMapEntry {
     typ: u32,
 }
 
-pub unsafe fn bootloader_name(info: *const BootInformation) {
+pub unsafe fn print_bootloader_name(info: *const BootInformation) {
     let mut com = Serial::new();
     let flags = (*info).flags;
     let name = (*info).boot_loader_name;
 
-    if flags & 0b1000 != 0b1000 {
+    if flags & 0x200 != 0x200 {
         // check bit 9
         writeln!(com, "bootloader name is not valid").unwrap();
         return;
@@ -55,7 +55,7 @@ pub unsafe fn bootloader_name(info: *const BootInformation) {
 pub unsafe fn print_mmap_sections(info: *const BootInformation) {
     let mut com = Serial::new();
 
-    if (*info).flags & 0b100 != 0b100 {
+    if (*info).flags & 0x40 != 0x40 {
         // check bit 6
         writeln!(com, "boot mmap entries are not valid").unwrap();
         return;

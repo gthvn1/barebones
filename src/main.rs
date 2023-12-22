@@ -14,7 +14,7 @@ mod multiboot;
 use core::{arch::global_asm, fmt::Write, panic::PanicInfo};
 use drivers::uart::Serial;
 use drivers::vga::TextMode;
-use multiboot::{bootloader_name, print_mmap_sections, BootInformation};
+use multiboot::{print_bootloader_name, print_mmap_sections, BootInformation};
 
 global_asm!(include_str!("boot.s"), options(att_syntax));
 
@@ -64,7 +64,7 @@ pub extern "C" fn kernel_start(eax: u32, ebx: *const BootInformation) -> ! {
     writeln!(com, "eax: {:#010x}", eax).unwrap();
     writeln!(com, "ebx: {:#010x}", ebx as u32).unwrap();
     unsafe {
-        bootloader_name(ebx);
+        print_bootloader_name(ebx);
         print_mmap_sections(ebx);
     }
 
