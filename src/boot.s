@@ -89,8 +89,8 @@ _start:
   */
 
   /* Args are pushed on the stack in reverse order */
-  push $0x5678
-  push $0x1234
+  push %ebx
+  push %eax
 
   call kernel_start
 
