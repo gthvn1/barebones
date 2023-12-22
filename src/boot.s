@@ -187,10 +187,11 @@ setup_gdt:
 update_gdt:
     /* CS is set by the far jump. We need to reload the other segment registers.
        Setup segment, kernel data is 0x10 in GDT */
-    movw $0x10, %ax
-    movw %ax, %ds
-    movw %ax, %es
-    movw %ax, %fs
-    movw %ax, %gs
-    movw %ax, %ss
+    /* NOTE: We use CX because eax and ebx are used for multiboot info */
+    movw $0x10, %cx
+    movw %cx, %ds
+    movw %cx, %es
+    movw %cx, %fs
+    movw %cx, %gs
+    movw %cx, %ss
     ret
