@@ -75,6 +75,7 @@ _start:
 	C++ features such as global constructors and exceptions will require
 	runtime support to work as well.
 	*/
+  call setup_gdt
 
 	/*
 	Enter the high-level kernel. The ABI requires the stack is 16-byte
@@ -108,3 +109,81 @@ This is useful when debugging or when you implement call tracing.
 */
 .size _start, . - _start
 
+/* ============================================================================
+  We followed the Long Mode Setup from https://wiki.osdev.org/GDT_Tutorial
+  GDT entry are 8 bytes long
+
+  An entry is:
+  +-------------------------------------------------------------------------------+
+  | Base @(24-31) |G|DB| |A|Limit (16-19)|P|DPL(13-14)|S|Type(8-11)|Base @(16-23) |
+  +-------------------------------------------------------------------------------+
+  |    Base address (Bit 0-15)           |      Segment Limit                     |
+  +-------------------------------------------------------------------------------+
+
+  0x00: keep it NULL
+  0x08: Kernel Code Seg (Base: 0x00000, Limit: 0xFFFFF, Access Byte: 0x9A, Flags: 0xC)
+  0x10: Kernel Data Seg (Base: 0x00000, Limit: 0xFFFFF, Access Byte: 0x92, Flags: 0xC)
+  0x18: User Code Seg   (Base: 0x10000, Limit: 0xFFFFF, Access Byte: 0xFA, Flags: 0xC)
+  0x20: User Data Seg   (Base: 0x10000, Limit: 0xFFFFF, Access Byte: 0xF2, Flags: 0xC)
+  0x28: Task State Seg  ...TO BE DONE
+*/
+gdt_start:
+  /* Null descriptor at Offset 0x00 */
+	.long 0
+	.long 0
+
+  /* Kernel Code at Offset 0x08 */
+	.word  0xFFFF /* Segment Limit */
+	.word  0x0    /* Base@ low */
+	.byte 0x0    /* Base@ mid */
+	.byte 0x9A   /* Access Byte: 1001_1010 */
+	.byte 0xCF   /* Flags + limit(16-19): 1100_1111 */
+	.byte 0x0    /* Base@ hi */
+
+  /* Kernel Data at Offset 0x10 */
+	.word  0xFFFF /* Segment Limit */
+	.word  0x0    /* Base@ low */
+	.byte 0x0    /* Base@ mid */
+	.byte 0x92   /* Access Byte: 1001_0010 */
+	.byte 0xCF   /* Flags + limit(16-19) */
+	.byte 0x0    /* Base@ hi */
+
+  /* User Code at Offset 0x18 */
+	.word  0xFFFF /* Segment Limit */
+	.word  0x0    /* Base@ lowq */
+	.byte 0x1    /* Base@ mid */
+	.byte 0xFA   /* Access Byte: 1111_1010 */
+	.byte 0xCF   /* Flags + limit(16-19) */
+	.byte 0x0    /* Base@ hi */
+
+  /* User Data at Offset 0x20 */
+	.word  0xFFFF /* Segment Limit */
+	.word  0x0    /* Base@ low */
+	.byte 0x1    /* Base@ mid */
+	.byte 0xF2   /* Access Byte: 1111_0010 */
+	.byte 0xCF   /* Flags + limit(16-19) */
+	.byte 0x0    /* Base@ hi */
+gdt_end:
+
+/* We can now define the GDT descriptor that will be passed to lgdt.
+/* https://wiki.osdev.org/Global_Descriptor_Table#GDTR */
+gdt_desc:
+	.word gdt_end - gdt_start - 1 /* size of the table in bytes subtracted by 1 */
+	.long gdt_start               /* the linear address of the GDT */
+
+setup_gdt:
+    lgdt [gdt_desc]
+    /* We need to clear the instruction pipeline:
+       - a far jump will do the job and send us out into protected world! */
+    jmp $0x8,$update_gdt
+
+update_gdt:
+    /* CS is set by the far jump. We need to reload the other segment registers.
+       Setup segment, kernel data is 0x10 in GDT */
+    movw $0x10, %ax
+    movw %ax, %ds
+    movw %ax, %es
+    movw %ax, %fs
+    movw %ax, %gs
+    movw %ax, %ss
+    ret
