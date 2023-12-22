@@ -1,6 +1,7 @@
 # Changelog
 
 ## 2023-12-24
+- Display boot info memory mappings
 - Setup the GDT
 
 ## 2023-12-20
