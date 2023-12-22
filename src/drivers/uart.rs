@@ -1,5 +1,5 @@
 // https://wiki.osdev.org/Serial_Ports
-use core::arch::asm;
+use core::{arch::asm, fmt::Write};
 
 pub struct Serial {
     port: u16,
@@ -35,23 +35,29 @@ impl Serial {
         true
     }
 
+    pub fn write_string(&self, s: &str) {
+        for ch in s.chars() {
+            self.write_serial(ch as u8);
+        }
+    }
+
     // Receiving data.
-    pub fn serial_received(&self) -> u8 {
+    fn serial_received(&self) -> u8 {
         Serial::inb(self.port + 5) & 1_u8
     }
 
-    pub fn read_serial(&self) -> u8 {
+    fn read_serial(&self) -> u8 {
         while self.serial_received() == 0 {}
 
         Serial::inb(self.port)
     }
 
     // Sending data.
-    pub fn is_transmit_empty(&self) -> u8 {
+    fn is_transmit_empty(&self) -> u8 {
         Serial::inb(self.port + 5) & 0x20_u8
     }
 
-    pub fn write_serial(&self, ch: u8) {
+    fn write_serial(&self, ch: u8) {
         while self.is_transmit_empty() == 0_u8 {}
 
         Serial::outb(self.port, ch);
@@ -81,5 +87,17 @@ impl Serial {
                 options(att_syntax)
             );
         }
+    }
+}
+
+// Implementing Write trait for Serial.
+// https://doc.rust-lang.org/core/macro.write.html
+// The note says: Note: This macro can be used in no_std setups as well.
+// In a no_std setup you are responsible for the implementation details
+// of the components.
+impl Write for Serial {
+    fn write_str(&mut self, s: &str) -> core::fmt::Result {
+        self.write_string(s);
+        Ok(())
     }
 }

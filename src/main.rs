@@ -10,8 +10,8 @@
 
 mod drivers;
 
-use core::{arch::global_asm, panic::PanicInfo};
-use drivers::serial;
+use core::{arch::global_asm, fmt::Write, panic::PanicInfo};
+use drivers::uart::Serial;
 use drivers::vga::TextMode;
 
 global_asm!(include_str!("boot.s"), options(att_syntax));
@@ -44,20 +44,20 @@ pub extern "C" fn kernel_start(eax: u32, ebx: u32) -> ! {
     let mut console = TextMode::new();
 
     console.clear();
-    console.write_string(BANNER);
-    console.write_string("How are you?\n\r");
 
-    let com = serial::Serial::new();
-    if com.init() {
-        console.write_string("Serial port initialized\n\r");
-        com.write_serial(b'H');
-        com.write_serial(b'e');
-        com.write_serial(b'l');
-        com.write_serial(b'l');
-        com.write_serial(b'o');
-    } else {
-        panic!("Serial port not initialized");
-    };
+    let mut com = Serial::new();
+    if !com.init() {
+        console.write_string("[KO] Serial port init failed\n\r");
+        panic!();
+    }
+
+    console.write_string("Serial port initialized\n\r");
+    // We can now use the serial port to write to the console !!!
+    // And serial implementing the Write trait we can use the write! macro. :)
+    // Just unwrap that will panic if the write fails.
+    write!(com, "{}\n\r", BANNER).unwrap();
+    write!(com, "eax: {:#08x}\n\r", eax).unwrap();
+    write!(com, "ebx: {:#08x}\n\r", ebx).unwrap();
 
     loop {}
 }
