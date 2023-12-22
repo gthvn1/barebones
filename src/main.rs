@@ -9,10 +9,12 @@
 // new entry point function using the 'mangle' attribute.
 
 mod drivers;
+mod multiboot;
 
 use core::{arch::global_asm, fmt::Write, panic::PanicInfo};
 use drivers::uart::Serial;
 use drivers::vga::TextMode;
+use multiboot::BootInformation;
 
 global_asm!(include_str!("boot.s"), options(att_syntax));
 
@@ -40,7 +42,7 @@ const BANNER: &str = "Welcome to Monkey Islang !\n\r";
 // The '!' type means that this function never returns.
 #[allow(clippy::empty_loop)]
 #[no_mangle]
-pub extern "C" fn kernel_start(eax: u32, ebx: u32) -> ! {
+pub extern "C" fn kernel_start(eax: u32, ebx: *const BootInformation) -> ! {
     let mut console = TextMode::new();
 
     console.clear();
@@ -57,7 +59,11 @@ pub extern "C" fn kernel_start(eax: u32, ebx: u32) -> ! {
     // Just unwrap that will panic if the write fails.
     write!(com, "{}\n\r", BANNER).unwrap();
     write!(com, "eax: {:#08x}\n\r", eax).unwrap();
-    write!(com, "ebx: {:#08x}\n\r", ebx).unwrap();
+    write!(com, "ebx: {:#08x}\n\r", ebx as u32).unwrap();
+    write!(com, "bootloader name {}\n\r", unsafe {
+        BootInformation::bootloader_name(&*ebx)
+    })
+    .unwrap();
 
     loop {}
 }
