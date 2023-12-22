@@ -14,7 +14,7 @@ mod multiboot;
 use core::{arch::global_asm, fmt::Write, panic::PanicInfo};
 use drivers::uart::Serial;
 use drivers::vga::TextMode;
-use multiboot::BootInformation;
+use multiboot::{bootloader_name, print_mmap_sections, BootInformation};
 
 global_asm!(include_str!("boot.s"), options(att_syntax));
 
@@ -44,26 +44,29 @@ const BANNER: &str = "Welcome to Monkey Islang !\n\r";
 #[no_mangle]
 pub extern "C" fn kernel_start(eax: u32, ebx: *const BootInformation) -> ! {
     let mut console = TextMode::new();
-
     console.clear();
 
+    // We start by initializing the serial port. So we will be able to print
+    // message to the console from others modules.
     let mut com = Serial::new();
     if !com.init() {
         console.write_string("[KO] Serial port init failed\n\r");
         panic!();
     }
 
-    console.write_string("Serial port initialized\n\r");
+    console.write_string("[OK] Serial port initialized\n\r");
+
     // We can now use the serial port to write to the console !!!
     // And serial implementing the Write trait we can use the write! macro. :)
     // Just unwrap that will panic if the write fails.
-    write!(com, "{}\n\r", BANNER).unwrap();
-    write!(com, "eax: {:#08x}\n\r", eax).unwrap();
-    write!(com, "ebx: {:#08x}\n\r", ebx as u32).unwrap();
-    write!(com, "bootloader name {}\n\r", unsafe {
-        BootInformation::bootloader_name(&*ebx)
-    })
-    .unwrap();
+
+    writeln!(com, "{}", BANNER).unwrap();
+    writeln!(com, "eax: {:#010x}", eax).unwrap();
+    writeln!(com, "ebx: {:#010x}", ebx as u32).unwrap();
+    unsafe {
+        bootloader_name(ebx);
+        print_mmap_sections(ebx);
+    }
 
     loop {}
 }
