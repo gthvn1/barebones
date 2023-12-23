@@ -49,7 +49,6 @@ pub extern "C" fn kernel_start(eax: u32, ebx: *const BootInformation) -> ! {
 
     // We start by initializing the serial port. So we will be able to print
     // message to the console from others modules.
-    Serial::init();
     //if !com.init() {
     //    console.write_string("[KO] Serial port init failed\n\r");
     //    panic!();
