@@ -1,6 +1,7 @@
 # Changelog
 
-## 2023-12-24
+## 2023-12-23
+- Implement println! macro that can be in all modules
 - Display boot info memory mappings
 - Setup the GDT
 
