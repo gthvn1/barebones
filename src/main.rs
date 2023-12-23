@@ -9,12 +9,12 @@
 // new entry point function using the 'mangle' attribute.
 
 mod drivers;
-mod multiboot;
+mod memory;
 
 use core::{arch::global_asm, fmt::Write, panic::PanicInfo};
 use drivers::uart::Serial;
 use drivers::vga::TextMode;
-use multiboot::{print_bootloader_name, print_mmap_sections, BootInformation};
+use memory::multiboot::{print_bootloader_name, print_mmap_sections, BootInformation};
 
 global_asm!(include_str!("boot.s"), options(att_syntax));
 
