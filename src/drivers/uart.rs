@@ -1,17 +1,21 @@
 // https://wiki.osdev.org/Serial_Ports
 use core::{arch::asm, fmt::Write};
+use lazy_static::lazy_static;
 
 pub struct Serial {
     port: u16,
 }
 
-pub static SERIAL_WRITER: Serial = Serial::new();
+const COM1: u16 = 0x3F8;
+
+lazy_static! {
+    pub static ref SERIAL_WRITER: &'static Serial = Serial::init(COM1);
+}
 
 macro_rules! print {
     ($($arg:tt)*) => {
-        let writer = &$crate::drivers::uart::SERIAL_WRITER as *const Serial;
-        let writer = unsafe { &mut *writer };
-        write!(&mut *writer, $($arg)*).unwrap();
+        let writer = unsafe {&mut $crate::drivers::uart::SERIAL_WRITER};
+        write!(writer, $($arg)*).unwrap();
     }
 }
 
@@ -24,30 +28,27 @@ macro_rules! println {
 #[allow(clippy::identity_op)]
 #[allow(dead_code)]
 impl Serial {
-    pub fn new() -> Serial {
-        Serial { port: 0x3f8 }
-    }
-
-    pub fn init() -> &'static Serial {
-        Serial::outb(SERIAL_WRITER.port + 1, 0x00); // Disable all interrupts
-        Serial::outb(SERIAL_WRITER.port + 3, 0x80); // Enable DLAB (set baud rate divisor)
-        Serial::outb(SERIAL_WRITER.port + 0, 0x03); // Set divisor to 3 (lo byte) 38400 baud
-        Serial::outb(SERIAL_WRITER.port + 1, 0x00); //                  (hi byte)
-        Serial::outb(SERIAL_WRITER.port + 3, 0x03); // 8 bits, no parity, one stop bit
-        Serial::outb(SERIAL_WRITER.port + 2, 0xC7); // Enable FIFO, clear them, with 14-byte threshold
-        Serial::outb(SERIAL_WRITER.port + 4, 0x0B); // IRQs enabled, RTS/DSR set
-        Serial::outb(SERIAL_WRITER.port + 4, 0x1E); // Set in loopback mode, test the serial chip
-        Serial::outb(SERIAL_WRITER.port + 0, 0xAE); // Test serial chip (send byte 0xAE and check if
-                                                    // serial returns same byte)
+    pub fn init(port: u16) -> &'static Serial {
+        Serial::outb(port + 1, 0x00); // Disable all interrupts
+        Serial::outb(port + 3, 0x80); // Enable DLAB (set baud rate divisor)
+        Serial::outb(port + 0, 0x03); // Set divisor to 3 (lo byte) 38400 baud
+        Serial::outb(port + 1, 0x00); //                  (hi byte)
+        Serial::outb(port + 3, 0x03); // 8 bits, no parity, one stop bit
+        Serial::outb(port + 2, 0xC7); // Enable FIFO, clear them, with 14-byte threshold
+        Serial::outb(port + 4, 0x0B); // IRQs enabled, RTS/DSR set
+        Serial::outb(port + 4, 0x1E); // Set in loopback mode, test the serial chip
+        Serial::outb(port + 0, 0xAE); // Test serial chip (send byte 0xAE and check if
+                                      // serial returns same byte)
 
         // Check if serial is faulty (i.e: not same byte as sent)
-        if Serial::inb(SERIAL_WRITER.port + 0) != 0xAE_u8 {
+        if Serial::inb(port + 0) != 0xAE_u8 {
             panic!("Serial is faulty");
         }
 
         // If serial is not faulty set it in normal operation mode
         // (not-loopback with IRQs enabled and OUT#1 and OUT#2 bits enabled)
-        Serial::outb(SERIAL_WRITER.port + 4, 0x0F);
+        Serial::outb(port + 4, 0x0F);
+        SERIAL_WRITER.port = port;
         &SERIAL_WRITER
     }
 
