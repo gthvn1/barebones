@@ -45,13 +45,13 @@ pub unsafe fn print_bootloader_name(info: *const BootInformation) {
     }
 
     let s = core::str::from_utf8_unchecked(core::slice::from_raw_parts(name, len));
-    //println!(com, "bootloader name: {s}").unwrap();
+    println!("bootloader name: {s}");
 }
 
 pub unsafe fn print_mmap_sections(info: *const BootInformation) {
     if (*info).flags & 0x40 != 0x40 {
         // check bit 6
-        //println!(com, "boot mmap entries are not valid").unwrap();
+        println!("boot mmap entries are not valid");
         return;
     }
 
@@ -78,6 +78,6 @@ pub unsafe fn print_mmap_sections(info: *const BootInformation) {
             _ => "reserved",
         };
 
-        //println!(com, "-> len: {len:<10} | addr: {addr:#010x} | type:{typ}").unwrap();
+        println!("-> len: {len:<10} | addr: {addr:#010x} | type:{typ}");
     }
 }

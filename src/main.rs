@@ -12,8 +12,7 @@
 mod drivers;
 mod memory;
 
-use core::{arch::global_asm, fmt::Write, panic::PanicInfo};
-use drivers::uart::Serial;
+use core::{arch::global_asm, panic::PanicInfo};
 use drivers::vga::TextMode;
 use memory::multiboot::{print_bootloader_name, print_mmap_sections, BootInformation};
 
@@ -29,7 +28,7 @@ fn panic(_info: &PanicInfo) -> ! {
     loop {}
 }
 
-const BANNER: &str = "Welcome to Monkey Islang !\n\r";
+const BANNER: &str = " -=( Welcome to Monkey Islang ! )=-\n\r";
 
 // Providing our panic handler generates an error about 'eh_personality'.
 // The eh stands for exception handling. 'eh_personality' marks
@@ -46,19 +45,10 @@ const BANNER: &str = "Welcome to Monkey Islang !\n\r";
 pub extern "C" fn kernel_start(eax: u32, ebx: *const BootInformation) -> ! {
     let mut console = TextMode::new();
     console.clear();
-
-    // We start by initializing the serial port. So we will be able to print
-    // message to the console from others modules.
-    //if !com.init() {
-    //    console.write_string("[KO] Serial port init failed\n\r");
-    //    panic!();
-    //}
-
-    console.write_string("[OK] Serial port initialized\n\r");
-
-    // We can now use the serial port to write to the console !!!
-    // And serial implementing the Write trait we can use the write! macro. :)
-    // Just unwrap that will panic if the write fails.
+    console.write_string(BANNER);
+    console.write_string("\r\n Ouputs are redirected to uart (COM1)");
+    console.write_string("\r\n If you don't see them check that ");
+    console.write_string("serial is enabled in qemu...");
 
     println!("{}", BANNER);
     println!("eax: {:#010x}", eax);
