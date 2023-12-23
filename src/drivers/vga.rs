@@ -57,7 +57,7 @@ impl TextMode {
         TextMode {
             row_position: 0,
             column_position: 0,
-            color_code: get_color_code(Color::Green, Color::Black),
+            color_code: get_color_code(Color::Black, Color::LightCyan),
             buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
         }
     }
