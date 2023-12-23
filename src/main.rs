@@ -8,6 +8,7 @@
 // and we will also need to tell to the compiler to not modify the name of our
 // new entry point function using the 'mangle' attribute.
 
+#[macro_use]
 mod drivers;
 mod memory;
 
@@ -48,11 +49,11 @@ pub extern "C" fn kernel_start(eax: u32, ebx: *const BootInformation) -> ! {
 
     // We start by initializing the serial port. So we will be able to print
     // message to the console from others modules.
-    let mut com = Serial::new();
-    if !com.init() {
-        console.write_string("[KO] Serial port init failed\n\r");
-        panic!();
-    }
+    Serial::init();
+    //if !com.init() {
+    //    console.write_string("[KO] Serial port init failed\n\r");
+    //    panic!();
+    //}
 
     console.write_string("[OK] Serial port initialized\n\r");
 
@@ -60,9 +61,9 @@ pub extern "C" fn kernel_start(eax: u32, ebx: *const BootInformation) -> ! {
     // And serial implementing the Write trait we can use the write! macro. :)
     // Just unwrap that will panic if the write fails.
 
-    writeln!(com, "{}", BANNER).unwrap();
-    writeln!(com, "eax: {:#010x}", eax).unwrap();
-    writeln!(com, "ebx: {:#010x}", ebx as u32).unwrap();
+    println!("{}", BANNER);
+    println!("eax: {:#010x}", eax);
+    println!("ebx: {:#010x}", ebx as u32);
     unsafe {
         print_bootloader_name(ebx);
         print_mmap_sections(ebx);

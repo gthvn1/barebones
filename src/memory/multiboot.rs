@@ -1,7 +1,4 @@
 // https://www.gnu.org/software/grub/manual/multiboot/multiboot.html#Boot-information-format
-use crate::drivers::uart::Serial;
-use core::fmt::Write;
-
 #[repr(C)]
 #[derive(Debug)]
 pub struct BootInformation {
@@ -33,13 +30,12 @@ pub struct MemoryMapEntry {
 }
 
 pub unsafe fn print_bootloader_name(info: *const BootInformation) {
-    let mut com = Serial::new();
     let flags = (*info).flags;
     let name = (*info).boot_loader_name;
 
     if flags & 0x200 != 0x200 {
         // check bit 9
-        writeln!(com, "bootloader name is not valid").unwrap();
+        //println!(com, "bootloader name is not valid").unwrap();
         return;
     }
 
@@ -49,19 +45,17 @@ pub unsafe fn print_bootloader_name(info: *const BootInformation) {
     }
 
     let s = core::str::from_utf8_unchecked(core::slice::from_raw_parts(name, len));
-    writeln!(com, "bootloader name: {s}").unwrap();
+    //println!(com, "bootloader name: {s}").unwrap();
 }
 
 pub unsafe fn print_mmap_sections(info: *const BootInformation) {
-    let mut com = Serial::new();
-
     if (*info).flags & 0x40 != 0x40 {
         // check bit 6
-        writeln!(com, "boot mmap entries are not valid").unwrap();
+        //println!(com, "boot mmap entries are not valid").unwrap();
         return;
     }
 
-    writeln!(com, "boot mmap entries").unwrap();
+    //println!(com, "boot mmap entries").unwrap();
 
     let mmap_length = (*info).mmap_length;
     for i in 0..mmap_length {
@@ -84,6 +78,6 @@ pub unsafe fn print_mmap_sections(info: *const BootInformation) {
             _ => "reserved",
         };
 
-        writeln!(com, "-> len: {len:<10} | addr: {addr:#010x} | type:{typ}").unwrap();
+        //println!(com, "-> len: {len:<10} | addr: {addr:#010x} | type:{typ}").unwrap();
     }
 }
