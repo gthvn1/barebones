@@ -28,7 +28,7 @@ fn panic(_info: &PanicInfo) -> ! {
     loop {}
 }
 
-const BANNER: &str = " -=( Welcome to Monkey Islang ! )=-\n\r";
+const BANNER: &str = "\n\r -=( Welcome to Monkey Islang ! )=-\n\r";
 
 // Providing our panic handler generates an error about 'eh_personality'.
 // The eh stands for exception handling. 'eh_personality' marks
