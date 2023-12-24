@@ -30,10 +30,13 @@ global_asm!(include_str!("boot.s"), options(att_syntax));
 // we don't have standard library we don't have the one provided by it that is
 // the normal default handler. So we need to define our own
 #[panic_handler]
-fn panic(_info: &PanicInfo) -> ! {
+fn panic(info: &PanicInfo) -> ! {
     // PanicInfo contains the file and line where the panic happened and
     // the optional panic message.
-    loop {}
+    println!("{}", info);
+    exit_qemu(QemuExitCode::Failed);
+    loop {} // This is needed because the compiler doesn't know that exit_qemu
+            // never returns.
 }
 
 // Quitting qemu properly

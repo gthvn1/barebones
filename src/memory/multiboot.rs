@@ -35,7 +35,7 @@ pub unsafe fn print_bootloader_name(info: *const BootInformation) {
 
     if flags & 0x200 != 0x200 {
         // check bit 9
-        //println!(com, "bootloader name is not valid").unwrap();
+        println!("bootloader name is not valid");
         return;
     }
 
@@ -54,8 +54,6 @@ pub unsafe fn print_mmap_sections(info: *const BootInformation) {
         println!("boot mmap entries are not valid");
         return;
     }
-
-    //println!(com, "boot mmap entries").unwrap();
 
     let mmap_length = (*info).mmap_length;
     for i in 0..mmap_length {
