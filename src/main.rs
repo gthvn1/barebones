@@ -17,7 +17,10 @@
 mod drivers;
 mod memory;
 
-use core::{arch::global_asm, panic::PanicInfo};
+use core::{
+    arch::{asm, global_asm},
+    panic::PanicInfo,
+};
 use drivers::vga::TextMode;
 use memory::multiboot::{print_bootloader_name, print_mmap_sections, BootInformation};
 
@@ -31,6 +34,26 @@ fn panic(_info: &PanicInfo) -> ! {
     // PanicInfo contains the file and line where the panic happened and
     // the optional panic message.
     loop {}
+}
+
+// Quitting qemu properly
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u32)]
+pub enum QemuExitCode {
+    Success = 0x0,
+    Failed = 0x1,
+}
+
+pub fn exit_qemu(exit_code: QemuExitCode) {
+    const PORT: u16 = 0xf4;
+    unsafe {
+        asm!(
+            "outb %al, %dx",
+            in("dx") PORT,
+            in("al") exit_code as u8,
+            options(att_syntax)
+        );
+    }
 }
 
 const BANNER: &str = "\n\r -=( Welcome to Monkey Islang ! )=-\n\r";
@@ -66,7 +89,8 @@ pub extern "C" fn kernel_start(eax: u32, ebx: *const BootInformation) -> ! {
     #[cfg(test)]
     test_main();
 
-    loop {}
+    exit_qemu(QemuExitCode::Success);
+    unreachable!();
 }
 
 #[test_case]
