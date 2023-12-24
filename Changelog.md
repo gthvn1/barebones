@@ -1,6 +1,7 @@
 # Changelog
 
 ## 2023-12-23
+- Quit qemu
 - Enabling test framework
 - Implement println! macro that can be in all modules
 - Display boot info memory mappings
