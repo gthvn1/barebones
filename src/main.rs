@@ -7,6 +7,11 @@
 #![no_main]
 // and we will also need to tell to the compiler to not modify the name of our
 // new entry point function using the 'mangle' attribute.
+#![feature(custom_test_frameworks)]
+#![test_runner(crate::test_runner)]
+// function name to use for the test runner is ignored because we are using the
+// no_main attribute. So we need to tell the compiler to use the test_main
+#![reexport_test_harness_main = "test_main"]
 
 #[macro_use]
 mod drivers;
@@ -58,5 +63,23 @@ pub extern "C" fn kernel_start(eax: u32, ebx: *const BootInformation) -> ! {
         print_mmap_sections(ebx);
     }
 
+    #[cfg(test)]
+    test_main();
+
     loop {}
+}
+
+#[test_case]
+fn trivial_assertion() {
+    print!("trivial assertion... ");
+    assert_eq!(1, 1);
+    println!("[ok]");
+}
+
+#[cfg(test)]
+fn test_runner(tests: &[&dyn Fn()]) {
+    println!("Running {} tests", tests.len());
+    for test in tests {
+        test();
+    }
 }
