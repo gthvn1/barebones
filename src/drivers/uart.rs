@@ -1,35 +1,11 @@
 // https://wiki.osdev.org/Serial_Ports
-use core::{arch::asm, fmt, fmt::Write};
-use lazy_static::lazy_static;
-use spin::Mutex;
+use core::{arch::asm, fmt::Write};
 
 pub struct Serial {
     port: u16,
 }
 
-const COM1: u16 = 0x3F8;
-
-// The problem is that the WRITER is immutable. So we use spinning mutex
-// to make it mutable. We use lazy_static to initialize the WRITER.
-lazy_static! {
-    pub static ref SERIAL_WRITER: Mutex<Serial> = Mutex::new(Serial::new(COM1));
-}
-
-#[macro_export]
-macro_rules! print {
-    ($($arg:tt)*) => ($crate::drivers::uart::_print(format_args!($($arg)*)));
-}
-
-#[macro_export]
-macro_rules! println {
-    () => ($crate::print!("\n"));
-    ($($arg:tt)*) => ($crate::print!("{}\n", format_args!($($arg)*)));
-}
-
-#[doc(hidden)]
-pub fn _print(args: fmt::Arguments) {
-    SERIAL_WRITER.lock().write_fmt(args).unwrap();
-}
+pub const COM1: u16 = 0x3F8;
 
 #[allow(clippy::identity_op)]
 #[allow(dead_code)]
