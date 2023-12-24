@@ -113,3 +113,10 @@ impl TextMode {
         self.column_position = 0;
     }
 }
+
+#[test_case]
+fn test_println_simple() {
+    let mut text_mode = TextMode::new();
+    text_mode.clear();
+    text_mode.write_string("test_println_simple output");
+}
