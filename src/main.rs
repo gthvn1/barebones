@@ -26,6 +26,17 @@ use memory::multiboot::{get_mem_from_multiboot, print_bootloader_name, BootInfor
 
 global_asm!(include_str!("boot.s"), options(att_syntax));
 
+extern "C" {
+    static _stext: u32;
+    static _etext: u32;
+    static _srodata: u32;
+    static _erodata: u32;
+    static _sdata: u32;
+    static _edata: u32;
+    static _sbss: u32;
+    static _ebss: u32;
+}
+
 // The panic_handler attribute is used to define a custom panic handler. As
 // we don't have standard library we don't have the one provided by it that is
 // the normal default handler. So we need to define our own
@@ -86,17 +97,69 @@ pub extern "C" fn kernel_start(eax: u32, ebx: *const BootInformation) -> ! {
     println!("eax: {:#010x}", eax);
     println!("ebx: {:#010x}", ebx as u32);
 
+    println!("# SETUP MEMORY");
+    println!("## Memory areas");
+    let mut text_start = 0;
+    let mut text_end = 0;
+    let mut ro_data_start = 0;
+    let mut ro_data_end = 0;
+    let mut data_start = 0;
+    let mut data_end = 0;
+    let mut bss_start = 0;
+    let mut bss_end = 0;
+
+    unsafe {
+        text_start = &_stext as *const u32 as usize;
+        text_end = &_etext as *const u32 as usize;
+        ro_data_start = &_erodata as *const u32 as usize;
+        ro_data_end = &_erodata as *const u32 as usize;
+        data_start = &_sdata as *const u32 as usize;
+        data_end = &_edata as *const u32 as usize;
+        bss_start = &_sbss as *const u32 as usize;
+        bss_end = &_ebss as *const u32 as usize;
+    }
+
+    println!(
+        "text_area   : start {:#010x} -> end {:#010x} : {}",
+        text_start,
+        text_end,
+        text_end - text_start
+    );
+    println!(
+        "ro_data_area: start {:#010x} -> end {:#010x} : {}",
+        ro_data_start,
+        ro_data_end,
+        ro_data_end - ro_data_start
+    );
+    println!(
+        "data_area   : start {:#010x} -> end {:#010x} : {}",
+        data_start,
+        data_end,
+        data_end - data_start
+    );
+    println!(
+        "bss_area    : start {:#010x} -> end {:#010x} : {}",
+        bss_start,
+        bss_end,
+        bss_end - bss_start
+    );
+
     let mut mem_start = 0;
     let mut mem_len = 0;
+
+    println!("## Multiboot");
     unsafe {
         print_bootloader_name(ebx);
         (mem_start, mem_len) = get_mem_from_multiboot(ebx);
     }
 
+    println!("## Setup Memory");
     let mem_len_mo = mem_len >> 20;
     println!("Reclaiming {mem_len_mo}Mo from {mem_start:#010x}");
 
     // TODO: init memory
+
+    println!("# ALL DONE");
 
     #[cfg(test)]
     test_main();
