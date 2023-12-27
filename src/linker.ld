@@ -24,27 +24,35 @@ SECTIONS
 	   Next we'll put the .text section. */
 	.text : ALIGN(4K)
 	{
+		_stext = .;
 		KEEP(*(.multiboot))
 		*(.text.*)
+		_etext = .;
 	}
 
 	/* Read-only data. */
 	.rodata : ALIGN(4K)
 	{
+		_srodata = .;
 		*(.rodata.*)
+		_erodata = .;
 	}
 
 	/* Read-write data (initialized) */
 	.data : ALIGN(4K)
 	{
+		_sdata = .;
 		*(.data.*)
+		_edata = .;
 	}
 
 	/* Read-write data (uninitialized) and stack */
 	.bss : ALIGN(4K)
 	{
+		_sbss = .;
 		*(.bss.*)
 		*(COMMON)
+		_ebss = .;
 	}
 
 	/* The compiler may produce other sections, by default it will put them in

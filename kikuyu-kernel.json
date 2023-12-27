@@ -13,6 +13,6 @@
   "disable-redzone": true,
   "features": "+soft-float,-sse",
   "pre-link-args": {
-    "ld.lld": [ "-Tlinker.ld" ]
+    "ld.lld": [ "-Tsrc/linker.ld" ]
   }
 }
