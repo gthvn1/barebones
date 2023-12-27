@@ -94,30 +94,27 @@ pub extern "C" fn kernel_start(eax: u32, ebx: *const BootInformation) -> ! {
     console.write_string("serial is enabled in qemu...");
 
     println!("{}", BANNER);
-    println!("eax: {:#010x}", eax);
-    println!("ebx: {:#010x}", ebx as u32);
 
     println!("# SETUP MEMORY");
-    println!("## Memory areas");
-    let mut text_start = 0;
-    let mut text_end = 0;
-    let mut ro_data_start = 0;
-    let mut ro_data_end = 0;
-    let mut data_start = 0;
-    let mut data_end = 0;
-    let mut bss_start = 0;
-    let mut bss_end = 0;
 
+    println!("## Registers");
+    println!("eax: {:#010x}", eax);
+    println!("ebx: {:#010x}", ebx as u32);
     unsafe {
-        text_start = &_stext as *const u32 as usize;
-        text_end = &_etext as *const u32 as usize;
-        ro_data_start = &_erodata as *const u32 as usize;
-        ro_data_end = &_erodata as *const u32 as usize;
-        data_start = &_sdata as *const u32 as usize;
-        data_end = &_edata as *const u32 as usize;
-        bss_start = &_sbss as *const u32 as usize;
-        bss_end = &_ebss as *const u32 as usize;
+        let esp: u32;
+        asm!("mov {}, esp", out(reg) esp);
+        println!("esp: {:#010x}", esp);
     }
+
+    println!("## Memory areas");
+    let text_start = unsafe { &_stext as *const u32 as usize };
+    let text_end = unsafe { &_etext as *const u32 as usize };
+    let ro_data_start = unsafe { &_srodata as *const u32 as usize };
+    let ro_data_end = unsafe { &_erodata as *const u32 as usize };
+    let data_start = unsafe { &_sdata as *const u32 as usize };
+    let data_end = unsafe { &_edata as *const u32 as usize };
+    let bss_start = unsafe { &_sbss as *const u32 as usize };
+    let bss_end = unsafe { &_ebss as *const u32 as usize };
 
     println!(
         "text_area   : start {:#010x} -> end {:#010x} : {}",
