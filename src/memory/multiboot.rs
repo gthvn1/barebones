@@ -48,11 +48,16 @@ pub unsafe fn print_bootloader_name(info: *const BootInformation) {
     println!("bootloader name: {s}");
 }
 
-pub unsafe fn print_mmap_sections(info: *const BootInformation) {
+// Read the memory map from the multiboot info structure and returns the
+// biggest start address and length of the memory area that is available for use.
+pub unsafe fn get_mem_from_multiboot(info: *const BootInformation) -> (u32, u32) {
+    let mut mem_start = 0;
+    let mut mem_len = 0;
+
     if (*info).flags & 0x40 != 0x40 {
         // check bit 6
         println!("boot mmap entries are not valid");
-        return;
+        return (0, 0);
     }
 
     let mmap_length = (*info).mmap_length;
@@ -68,14 +73,22 @@ pub unsafe fn print_mmap_sections(info: *const BootInformation) {
 
         let len = (*p).len_low;
         let addr = (*p).addr_low;
-        let typ = match (*p).typ {
-            1 => "available RAM",
+        let typ_str = match (*p).typ {
+            1 => {
+                if len > mem_len {
+                    mem_start = addr;
+                    mem_len = len
+                }
+                "available RAM"
+            }
             3 => "ACPI reclaimable",
             4 => "reserved preserved on hibernation",
             5 => "bad memory",
             _ => "reserved",
         };
 
-        println!("-> len: {len:<10} | addr: {addr:#010x} | type:{typ}");
+        println!("-> len: {len:<10} | addr: {addr:#010x} | type:{typ_str}");
     }
+
+    (mem_start, mem_len)
 }

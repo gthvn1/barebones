@@ -22,7 +22,7 @@ use core::{
     panic::PanicInfo,
 };
 use drivers::vga::TextMode;
-use memory::multiboot::{print_bootloader_name, print_mmap_sections, BootInformation};
+use memory::multiboot::{get_mem_from_multiboot, print_bootloader_name, BootInformation};
 
 global_asm!(include_str!("boot.s"), options(att_syntax));
 
@@ -75,6 +75,7 @@ const BANNER: &str = "\n\r -=( Welcome to Monkey Islang ! )=-\n\r";
 #[no_mangle]
 pub extern "C" fn kernel_start(eax: u32, ebx: *const BootInformation) -> ! {
     let mut console = TextMode::new();
+
     console.clear();
     console.write_string(BANNER);
     console.write_string("\r\n Ouputs are redirected to uart (COM1)");
@@ -84,10 +85,18 @@ pub extern "C" fn kernel_start(eax: u32, ebx: *const BootInformation) -> ! {
     println!("{}", BANNER);
     println!("eax: {:#010x}", eax);
     println!("ebx: {:#010x}", ebx as u32);
+
+    let mut mem_start = 0;
+    let mut mem_len = 0;
     unsafe {
         print_bootloader_name(ebx);
-        print_mmap_sections(ebx);
+        (mem_start, mem_len) = get_mem_from_multiboot(ebx);
     }
+
+    let mem_len_mo = mem_len >> 20;
+    println!("Reclaiming {mem_len_mo}Mo from {mem_start:#010x}");
+
+    // TODO: init memory
 
     #[cfg(test)]
     test_main();
