@@ -1,7 +1,12 @@
 # Changelog
 
+## 2023-12-28
+- First implementation of the allocator
+  - no deallocation currently
+  - but we can use vectors :)
+
 ## 2023-12-23
-- Quit qemu
+- Quit qemu properly
 - Enabling test framework
 - Implement println! macro that can be in all modules
 - Display boot info memory mappings
