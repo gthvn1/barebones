@@ -17,6 +17,9 @@
 mod drivers;
 mod memory;
 
+extern crate alloc;
+
+use alloc::vec::Vec;
 use core::{
     arch::{asm, global_asm},
     panic::PanicInfo,
@@ -100,21 +103,21 @@ pub extern "C" fn kernel_start(eax: u32, ebx: *const BootInformation) -> ! {
     println!("## Registers");
     println!("eax: {:#010x}", eax);
     println!("ebx: {:#010x}", ebx as u32);
+    let esp: u32;
     unsafe {
-        let esp: u32;
         asm!("mov {}, esp", out(reg) esp);
         println!("esp: {:#010x}", esp);
     }
 
     println!("## Memory areas");
-    let text_start = unsafe { &_stext as *const u32 as usize };
-    let text_end = unsafe { &_etext as *const u32 as usize };
-    let ro_data_start = unsafe { &_srodata as *const u32 as usize };
-    let ro_data_end = unsafe { &_erodata as *const u32 as usize };
-    let data_start = unsafe { &_sdata as *const u32 as usize };
-    let data_end = unsafe { &_edata as *const u32 as usize };
-    let bss_start = unsafe { &_sbss as *const u32 as usize };
-    let bss_end = unsafe { &_ebss as *const u32 as usize };
+    let text_start = unsafe { &_stext as *const u32 as u32 };
+    let text_end = unsafe { &_etext as *const u32 as u32 };
+    let ro_data_start = unsafe { &_srodata as *const u32 as u32 };
+    let ro_data_end = unsafe { &_erodata as *const u32 as u32 };
+    let data_start = unsafe { &_sdata as *const u32 as u32 };
+    let data_end = unsafe { &_edata as *const u32 as u32 };
+    let bss_start = unsafe { &_sbss as *const u32 as u32 };
+    let bss_end = unsafe { &_ebss as *const u32 as u32 };
 
     println!(
         "text_area   : start {:#010x} -> end {:#010x} : {}",
@@ -141,20 +144,48 @@ pub extern "C" fn kernel_start(eax: u32, ebx: *const BootInformation) -> ! {
         bss_end - bss_start
     );
 
-    let mut mem_start = 0;
-    let mut mem_len = 0;
-
     println!("## Multiboot");
     unsafe {
         print_bootloader_name(ebx);
-        (mem_start, mem_len) = get_mem_from_multiboot(ebx);
     }
 
-    println!("## Setup Memory");
-    let mem_len_mo = mem_len >> 20;
-    println!("Reclaiming {mem_len_mo}Mo from {mem_start:#010x}");
+    let (mem_start, mem_len) = unsafe { get_mem_from_multiboot(ebx) };
 
-    // TODO: init memory
+    println!("## Setup Memory");
+    // We will use the memory above the current stack pointer and aligned
+    // to 4096 bytes.
+    let heap_start = ((esp / 4096) + 1) * 4096;
+    assert!(heap_start > bss_end);
+    assert!(heap_start > data_end);
+    assert!(heap_start > ro_data_end);
+    assert!(heap_start > text_end);
+    assert!(heap_start > mem_start);
+    assert!(heap_start < mem_start + mem_len);
+    let heap_len = mem_start + mem_len - heap_start;
+    {
+        let heap_size = heap_len / 1024 / 1024;
+        println!("Reclaiming {heap_size}Mo from {heap_start:#010x}");
+    }
+
+    unsafe {
+        memory::init(heap_start as usize, heap_len as usize);
+    }
+
+    {
+        println!("First allocation");
+        let mut v = Vec::new();
+        for i in 0..50 {
+            v.push(i);
+        }
+    }
+
+    {
+        println!("Second allocation");
+        let mut v = Vec::new();
+        for i in 0..50 {
+            v.push(i);
+        }
+    }
 
     println!("# ALL DONE");
 
@@ -166,7 +197,7 @@ pub extern "C" fn kernel_start(eax: u32, ebx: *const BootInformation) -> ! {
 }
 
 pub trait Testable {
-    fn run(&self) -> ();
+    fn run(&self);
 }
 
 impl<T> Testable for T
