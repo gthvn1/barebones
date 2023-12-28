@@ -32,3 +32,7 @@ debug...
 - [Writing an OS in Rust](https://os.phil-opp.com/)
 - [Bare Bones - booting simple kernel](https://wiki.osdev.org/Bare_Bones)
 - [Writing an OS - Sphaerophoria YT](https://www.youtube.com/watch?v=gBykJMqDqH0&list=PL980gcR1LE3LBuWuSv2CL28HsfnpC4Qf7)
+
+# Screenshots
+## Changelog 2023-12-28
+![](https://github.com/gthvn1/kikuyu/blob/master/screenshots/screenshot-changelog-2023-12-28.png)
